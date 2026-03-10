@@ -12,7 +12,7 @@ const apiPrefix = '/api/v1'; // Bạn có thể thêm /api/v1 nếu muốn
 routerV1.use(`${apiPrefix}/auth`, authRouter);
 routerV1.use(`${apiPrefix}/admin`, isAuth, authorize('admin'), adminRouter);
 routerV1.use(`${apiPrefix}/todos`, isAuth, todoRouter);
-routerV1.use(
+routerV1.get(
   `${apiPrefix}/public/todos`,
   cacheMiddleware('todo_list'),
   getAllPublic,
