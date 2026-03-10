@@ -1,0 +1,64 @@
+# --- SYSTEM FILES ---
+.DS_Store
+Thumbs.db
+*.log
+logs
+*.gz
+
+# --- NODE.JS / REACT / NEXTJS ---
+node_modules/
+dist/
+build/
+.next/
+.cache/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.eslintcache
+.stylelintcache
+
+# --- ENVIRONMENT & SECRETS (Cực kỳ quan trọng) ---
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+*.pem
+*.key
+
+# --- DATABASE / REDIS ---
+dump.rdb
+*.sqlite
+data/
+db/
+
+# --- IDE / EDITORS ---
+.vscode/
+.idea/
+*.swp
+*.swo
+*.sublime-project
+*.sublime-workspace
+
+# --- JAVA / SPRING BOOT (Cho tương lai) ---
+target/
+*.class
+*.jar
+*.war
+*.ear
+.metadata
+.classpath
+.project
+.settings/
+.gradle/
+bin/
+
+# --- DOCKER ---
+.docker/
+
+# --- TESTING ---
+coverage/
+.nyc_output
+
+# --- TYPESCRIPT ---
+*.tsbuildinfo
