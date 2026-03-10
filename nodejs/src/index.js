@@ -4,13 +4,16 @@ import bodyParser from 'body-parser';
 import cookieParser from 'cookie-parser';
 import http from 'http';
 import path from 'path';
+import session from 'express-session';
 
+import passportConfig from './shared/configs/passport.js';
 import ENV from './shared/configs/env.js';
 import { connectMongoDB } from './shared/configs/database.js';
 import { handleErrorResponse } from './shared/utils/response.js';
 import { connectRedis } from './shared/configs/redis.js';
 import { initSocket } from './shared/configs/socket.js';
 import routerV1 from './features/v1.route.js';
+import passport from 'passport';
 
 const app = express();
 const server = http.createServer(app);
@@ -44,7 +47,18 @@ app.use(cookieParser());
 app.use(bodyParser.json({ limit: '50mb' }));
 app.use(bodyParser.urlencoded({ extended: true, limit: '50mb' }));
 
-// 4. Routers
+// 4. passport
+app.use(
+  session({
+    secret: ENV.REDIS_USERNAME,
+    resave: false,
+    saveUninitialized: true,
+  }),
+);
+app.use(passport.initialize());
+app.use(passport.session());
+
+// 5. Routers
 app.use(`/`, routerV1);
 app.use(handleErrorResponse);
 app.get('/chat', (req, res) => {
@@ -53,7 +67,7 @@ app.get('/chat', (req, res) => {
   res.sendFile(filePath);
 });
 
-// 5. LISTEN 1 LẦN DUY NHẤT TRÊN SERVER
+// 6. LISTEN 1 LẦN DUY NHẤT TRÊN SERVER
 server.listen(ENV.PORT, () => {
   console.log(`🚀 Server + Socket.io running on: http://localhost:${ENV.PORT}`);
 });
