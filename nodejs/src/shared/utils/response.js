@@ -22,6 +22,7 @@ export const handleResponse = (
   },
 ) => {
   return res.status(statusCode).json({
+    statusCode,
     success,
     message,
     data,

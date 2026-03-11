@@ -49,7 +49,7 @@ export const register = catchAsync(async (req, res, next) => {
   );
 
   // 5. Gửi Mail kích hoạt
-  const verifyUrl = `${ENV.WEBSITE_URL}/verify-email/${verifyToken}`;
+  const verifyUrl = `${ENV.WEBSITE_URL}/verify-email?token=${verifyToken}`;
   const htmlContent = emailTemplates.verifyEmail(username, verifyUrl);
 
   try {
@@ -316,7 +316,7 @@ export const forgotPassword = catchAsync(async (req, res, next) => {
   await redisClient.setEx(`reset_pw:${hashedToken}`, 900, user._id.toString());
 
   // 5. Chuẩn bị URL gửi mail (Frontend URL)
-  const resetUrl = `${ENV.WEBSITE_URL}/reset-password/${resetToken}`;
+  const resetUrl = `${ENV.WEBSITE_URL}/reset-password?token=${resetToken}`;
 
   // 6. Gọi template và truyền dữ liệu
   const htmlContent = emailTemplates.resetPassword(user.username, resetUrl);
