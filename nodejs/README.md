@@ -41,6 +41,7 @@ Kiến trúc được thiết kế theo dạng Feature-based (phân chia theo t�
 * Framework: Express.js
 * Cơ sở dữ liệu: MongoDB (Mongoose)
 * Bộ nhớ đệm: Redis (Cloud-ready với Upstash/Railway)
+* Dịch vụ lưu trữ: Cloudinary, Imgbb
 * Bảo mật: JWT, Passport.js, Bcrypt
 * Real-time: Socket.io
 * Triển khai: Vercel
