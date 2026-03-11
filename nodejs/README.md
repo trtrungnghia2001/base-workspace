@@ -47,5 +47,5 @@ Kiến trúc được thiết kế theo dạng Feature-based (phân chia theo t�
 
 ## Demo
 
-* API Endpoints: [https://your-api-link.vercel.app/api/v1](https://base-workspace-nodejs.vercel.app/)
+* API Endpoints: [https://base-workspace-nodejs.vercel.app](https://base-workspace-nodejs.vercel.app)
 * Postman: https://tiki33.postman.co/workspace/My-Workspace~3118de7e-a1e1-4349-8e69-b826f597fddd/collection/28225827-acefa77f-b01a-406e-a614-0e28961a0087?action=share&source=copy-link&creator=28225827
