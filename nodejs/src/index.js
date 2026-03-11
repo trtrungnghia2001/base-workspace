@@ -14,6 +14,7 @@ import { connectRedis } from './shared/configs/redis.js';
 import { initSocket } from './shared/configs/socket.js';
 import routerV1 from './features/v1.route.js';
 import passport from 'passport';
+import { COOKIE_DEFAULT_OPTIONS } from './shared/constants/index.js';
 
 const app = express();
 const server = http.createServer(app);
@@ -34,9 +35,10 @@ try {
 app.use(
   cors({
     origin: [
-      'http://localhost:5000',
-      'http://127.0.0.1:5500',
       'http://localhost:3000',
+      'http://localhost:5000',
+      'http://localhost:5173',
+      'http://127.0.0.1:5500',
       ENV.WEBSITE_URL,
     ],
     credentials: true,
@@ -50,9 +52,11 @@ app.use(bodyParser.urlencoded({ extended: true, limit: '50mb' }));
 // 4. passport
 app.use(
   session({
-    secret: ENV.REDIS_USERNAME,
+    secret: ENV.SESSION_SECRET,
     resave: false,
-    saveUninitialized: true,
+    saveUninitialized: false,
+    proxy: true,
+    cookie: COOKIE_DEFAULT_OPTIONS,
   }),
 );
 app.use(passport.initialize());

@@ -4,7 +4,13 @@ import { createAuthSession } from './auth.helper.js';
 import { StatusCodes } from 'http-status-codes';
 
 export const passportSuccess = catchAsync(async (req, res, next) => {
+  const getCK = req.cookies[`connect.sid`];
+  if (!getCK) {
+    throw createError.Unauthorized(`Invalid connect.sid`);
+  }
+
   const user = req.user;
+
   if (!user) {
     throw createError.Unauthorized('Authentication failed');
   }

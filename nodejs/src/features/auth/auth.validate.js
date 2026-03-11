@@ -19,14 +19,14 @@ export const updateMeSchema = Joi.object({
     'string.min': 'Tên người dùng phải ít nhất 3 ký tự',
   }),
 
+  // Field này thường dùng khi bạn muốn cập nhật trực tiếp URL
+  // (ví dụ: dùng ảnh từ Google/Facebook)
+  avatarUrl: Joi.string().uri().optional(),
+
   bio: Joi.string().max(200).allow('', null).optional(),
 
   // Field này dùng để chứa file từ Multer (nếu bạn gửi qua form-data)
   avatar: Joi.any().optional(),
-
-  // Field này thường dùng khi bạn muốn cập nhật trực tiếp URL
-  // (ví dụ: dùng ảnh từ Google/Facebook)
-  avatarUrl: Joi.string().uri().optional(),
 });
 
 export const changePasswordSchema = Joi.object({

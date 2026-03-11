@@ -68,7 +68,6 @@ authRouter.get(
   passportConfig.authenticate('google', {
     successRedirect: ENV.PASSPORT_URL_REDIRECT_SUCCESS,
     failureRedirect: ENV.PASSPORT_URL_REDIRECT_FAILED,
-    session: true,
   }),
 );
 authRouter.get(`/passport/success`, passportSuccess);
