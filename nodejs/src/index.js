@@ -64,12 +64,12 @@ app.use(passport.session());
 
 // 5. Routers
 app.use(`/`, routerV1);
-app.use(handleErrorResponse);
 app.get('/chat', (req, res) => {
   const filePath = path.join(process.cwd(), 'public', 'index.html');
 
   res.sendFile(filePath);
 });
+app.use(handleErrorResponse);
 
 // 6. LISTEN 1 LẦN DUY NHẤT TRÊN SERVER
 server.listen(ENV.PORT, () => {

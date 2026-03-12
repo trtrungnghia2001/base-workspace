@@ -3,9 +3,7 @@ import ENV from './env.js';
 
 // 1. Khởi tạo client
 const redisClient = createClient({
-  url: !ENV.IS_PRODUCTION
-    ? `redis://${ENV.REDIS_USERNAME}:${ENV.REDIS_PASSWORD}@${ENV.REDIS_HOST}:${ENV.REDIS_PORT}`
-    : `redis://${ENV.REDIS_HOST}:${ENV.REDIS_PORT}`,
+  url: ENV.REDIS_URL,
   socket: {
     reconnectStrategy: (retries) => Math.min(retries * 50, 2000),
   },

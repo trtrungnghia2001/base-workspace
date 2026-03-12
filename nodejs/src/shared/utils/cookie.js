@@ -1,4 +1,3 @@
-import ENV from '../configs/env.js';
 import { COOKIE_DEFAULT_OPTIONS } from '../constants/index.js';
 
 /**
@@ -16,9 +15,5 @@ export const setCookie = (res, name, value) => {
  * Hàm xóa cookie theo tên
  */
 export const clearCookie = (res, name) => {
-  res.clearCookie(name, {
-    httpOnly: true,
-    secure: ENV.IS_PRODUCTION,
-    sameSite: 'strict',
-  });
+  res.clearCookie(name, { ...COOKIE_DEFAULT_OPTIONS, maxAge: 0 });
 };

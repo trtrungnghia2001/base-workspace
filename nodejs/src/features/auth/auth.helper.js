@@ -28,14 +28,14 @@ export const createAuthSession = async (res, user) => {
   const { accessToken, refreshToken } = generateAuthTokens(payload);
 
   // Lưu refresh token vào Redis (Với key là userId để dễ dàng quản lý)
-  const RF_EXP_MS = 7 * 24 * 60 * 60 * 1000;
+  const RF_EXP_MS = 3 * 24 * 60 * 60 * 1000; // 3d
   const rfKey = `rf_token:${payload._id}`;
 
   await redisClient.setEx(rfKey, RF_EXP_MS / 1000, refreshToken); // setEx nhận thời gian tính bằng giây
 
   // Gắn token vào Cookie
   setCookie(res, 'accessToken', accessToken, {
-    maxAge: 1 * 24 * 60 * 60 * 1000,
+    maxAge: 15 * 60 * 1000, // 15m
   });
   setCookie(res, 'refreshToken', refreshToken, {
     maxAge: RF_EXP_MS,
@@ -50,12 +50,15 @@ export const createAuthSession = async (res, user) => {
  * @param {string} userId - ID của người dùng
  */
 export const destroyAuthSession = async (res, userId) => {
-  const rfKey = `rf_token:${userId}`;
-
   // 1. Xóa token trong Redis (Vô hiệu hóa Refresh Token ngay lập tức)
-  await redisClient.del(rfKey);
+  if (userId) {
+    const rfKey = `rf_token:${userId}`;
+
+    await redisClient.del(rfKey);
+  }
 
   // 2. Xóa các Cookie ở trình duyệt
+  clearCookie(res, 'connect.sid');
   clearCookie(res, 'accessToken');
   clearCookie(res, 'refreshToken');
 };

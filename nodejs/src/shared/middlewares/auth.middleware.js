@@ -9,8 +9,14 @@ import { redisClient } from '../configs/redis.js';
  * Middleware xác thực người dùng qua JWT trong Cookie
  */
 export const isAuth = catchAsync(async (req, res, next) => {
+  console.log({
+    accessToken: req.cookies.accessToken,
+    authorization: req.headers.authorization?.split(' ')?.[1],
+  });
+
   // 1. Lấy token từ cookie (Tên cookie phải khớp với lúc bạn setCookie)
-  const token = req.cookies.accessToken || req.headers.authorization;
+  const token =
+    req.cookies.accessToken || req.headers.authorization?.split(' ')?.[1];
 
   if (!token) {
     throw createError.Unauthorized('Vui lòng đăng nhập để truy cập!');
@@ -32,10 +38,7 @@ export const isAuth = catchAsync(async (req, res, next) => {
     // Điều này quan trọng nếu User bị xóa nhưng Token vẫn còn hạn
     const user = await User.findById(decoded._id).select('-password');
     if (!user) {
-      throw createError(
-        StatusCodes.UNAUTHORIZED,
-        'Người dùng không còn tồn tại!',
-      );
+      throw createError.Unauthorized('Người dùng không còn tồn tại!');
     }
 
     // 4. Lưu thông tin user vào request để dùng ở Controller

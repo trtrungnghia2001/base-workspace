@@ -1,5 +1,8 @@
 import dotenv from 'dotenv';
-dotenv.config({ path: '.env' });
+dotenv.config({
+  path: '.env',
+  // path: process.env.NODE_ENV === 'production' ? '.env' : '.env.example',
+});
 
 const ENV = {
   PORT: process.env.PORT,
@@ -14,10 +17,7 @@ const ENV = {
   JWT_REFRESH_SECRET: process.env.JWT_REFRESH_SECRET,
   JWT_REFRESH_EXPIRESIN: process.env.JWT_REFRESH_EXPIRESIN,
 
-  REDIS_HOST: process.env.REDIS_HOST,
-  REDIS_PORT: process.env.REDIS_PORT,
-  REDIS_PASSWORD: process.env.REDIS_PASSWORD,
-  REDIS_USERNAME: process.env.REDIS_USERNAME,
+  REDIS_URL: process.env.REDIS_URL,
 
   EMAIL_USER: process.env.EMAIL_USER,
   EMAIL_PASS: process.env.EMAIL_PASS,
@@ -35,7 +35,6 @@ const ENV = {
   GOOGLE_CALLBACK_URL: process.env.GOOGLE_CALLBACK_URL,
 
   IMGBB_API_KEY: process.env.IMGBB_API_KEY,
-  NODE_ENV: process.env.NODE_ENV || 'development',
   IS_PRODUCTION: process.env.NODE_ENV === 'production',
 };
 

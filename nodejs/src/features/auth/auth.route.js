@@ -46,7 +46,7 @@ authRouter.patch(
   validate(changePasswordSchema),
   changePassword,
 );
-authRouter.post('/logout', isAuth, logout);
+authRouter.post('/logout', logout);
 authRouter.post('/refresh-token', refreshToken);
 authRouter.post(
   '/forgot-password',

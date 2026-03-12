@@ -1,0 +1,53 @@
+version: '3.8' # Phiên bản cấu hình, 3.8 là bản ổn định phổ biến nhất
+
+services:
+  # --- DỊCH VỤ NODEJS ---
+  nodejs:
+    container_name: my_nodejs_api  # Đặt tên cho dễ tìm trong Docker Desktop
+    build: ./nodejs               # Docker sẽ vào folder ./nodejs để tìm Dockerfile
+    ports:
+      - "5000:5000"              # [Máy thật]:[Container] - Chạy web tại localhost:5000
+    volumes:
+      - ./nodejs:/app            # Đồng bộ code: Sửa file ở máy Windows là trong Docker đổi luôn
+      - /app/node_modules        # Không để node_modules máy thật đè lên node_modules container
+    environment:
+      - MONGO_URI=mongodb://mongodb:27017
+      - REDIS_URL=redis://redis:6379
+    command: npm run dev  # Đảm bảo chạy lệnh có nodemon
+    depends_on:
+      - mongodb
+      - redis
+
+  # --- DỊCH VỤ REACT ---
+  react:
+    container_name: my_react_app   # Tên container hiển thị
+    build: ./react                # Docker sẽ vào folder ./react để tìm Dockerfile
+    ports:
+      - "5173:5173"              # Cổng mặc định của Vite (React)
+    volumes:
+      - ./react:/app             # Hot-reload: Sửa giao diện là trình duyệt tự refresh
+      - /app/node_modules        # Tránh lỗi xung đột thư viện giữa Windows và Linux
+    stdin_open: true             # Giữ cho tiến trình terminal không tự đóng
+    tty: true                    # Hiển thị log có màu sắc cho dễ đọc lỗi
+    depends_on:
+      - nodejs                   # Ra lệnh cho Docker: "Bật nodejs xong mới được bật react"
+
+  # --- DỊCH VỤ MONGODB (Database) ---
+  mongodb:
+    image: mongo:latest        # Dùng image có sẵn trên Docker Hub
+    container_name: mongodb_db
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db    # Giữ lại dữ liệu kể cả khi 'down' container
+
+  # --- DỊCH VỤ REDIS (Caching) ---
+  redis:
+    image: redis:alpine        # Bản alpine rất nhẹ
+    container_name: redis_cache
+    ports:
+      - "6379:6379"
+
+# Khai báo Volume để lưu trữ dữ liệu MongoDB bền vững
+volumes:
+  mongo_data:

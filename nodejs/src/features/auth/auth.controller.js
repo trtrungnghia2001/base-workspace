@@ -10,6 +10,7 @@ import { emailTemplates } from '#server/shared/templates/emailTemplates';
 import { sendEmail } from '#server/shared/utils/mailer';
 import ENV from '#server/shared/configs/env';
 import { StorageService } from '#server/shared/configs/storage';
+import jwt from 'jsonwebtoken';
 
 export const register = catchAsync(async (req, res, next) => {
   const { username, email, password } = req.body;
@@ -239,42 +240,54 @@ export const changePassword = catchAsync(async (req, res, next) => {
   });
 });
 export const logout = catchAsync(async (req, res, next) => {
-  // 1. Lấy Access Token từ Cookie
-  const accessToken = req.cookies.accessToken;
+  const { accessToken } = req.cookies;
+  let userId = null;
 
+  // 1. Xử lý Blacklist nếu có token
   if (accessToken) {
-    // 2. Tính toán thời gian còn lại của Token (TTL)
-    // Nếu token còn 10 phút mới hết hạn, ta cho nó vào Blacklist 10 phút
-    const decoded = verifyToken(accessToken); // Giải mã để lấy iat, exp
-    const now = Math.floor(Date.now() / 1000);
-    const ttl = decoded.exp - now;
+    try {
+      const payload = jwt.decode(accessToken);
+      if (payload) userId = payload._id;
 
-    if (ttl > 0) {
-      // Lưu vào Redis với tiền tố bl: (blacklist)
-      await redisClient.setEx(`bl:${accessToken}`, ttl, 'true');
+      const decoded = verifyToken(accessToken);
+
+      if (decoded) {
+        const now = Math.floor(Date.now() / 1000);
+        const ttl = decoded.exp - now;
+
+        userId = decoded._id;
+
+        if (ttl > 0) {
+          // Cho vào blacklist để vô hiệu hóa AT ngay lập tức
+          await redisClient.setEx(`bl:${accessToken}`, ttl, 'true');
+        }
+      }
+    } catch (err) {
+      // Nếu verifyToken lỗi (token fake hoặc quá hạn), ta log ra và tiếp tục dọn dẹp
+      console.log('Logout: Token verify failed, proceeding to clear cookies.');
     }
   }
 
-  // 3. Xóa Refresh Token và Cookie như cũ
-  await destroyAuthSession(res, req.user._id);
+  await destroyAuthSession(res, userId);
 
-  return handleResponse(res, { message: 'Đã xóa toàn bộ phiên đăng nhập' });
+  return handleResponse(res, { message: 'Đã đăng xuất thành công' });
 });
 export const refreshToken = catchAsync(async (req, res, next) => {
   const { refreshToken } = req.cookies;
+
   if (!refreshToken) {
     throw createError.Unauthorized('Không tìm thấy refresh token');
   }
 
-  // 1. Verify chữ ký và hạn dùng (logic JWT thuần túy)
-  const payload = verifyToken(refreshToken, ENV.JWT_REFRESH_SECRET);
-  if (!payload) {
-    throw createError.Unauthorized(
-      'Refresh token không hợp lệ hoặc đã hết hạn',
-    );
+  let payload;
+  // 1. Verify chữ ký và hạn dùng
+  try {
+    payload = verifyToken(refreshToken, ENV.JWT_REFRESH_SECRET);
+  } catch (err) {
+    throw createError.Unauthorized('Phiên đăng nhập hết hạn');
   }
 
-  // 2. LỖI LOGIC NẰM Ở ĐÂY -> CẦN CHECK REDIS
+  // 2. CẦN CHECK REDIS
   // Lấy key dựa trên cấu trúc bạn đã thống nhất (ví dụ có version hoặc không)
   const rfKey = `rf_token:${payload._id}*`;
   const sessionKeys = await redisClient.keys(rfKey);
